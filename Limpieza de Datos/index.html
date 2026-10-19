@@ -1,13 +1,136 @@
-<!DOCTYPE html>
-<html lang="es">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Limpieza de Datos — Aprendizaje Supervisado</title>
-</head>
-<body>
-  <h1>Limpieza de Datos</h1>
-  <p>Reemplaza este archivo por el HTML de tu trabajo correspondiente.</p>
-  <p><a href="../">← Volver al dashboard</a></p>
-</body>
-</html>
+<!DOCTYPE html><html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Limpieza de datos en Python</title><style>*{box-sizing:border-box}body{margin:0;background:#050b17;color:#cfe3ff;font:15px/1.55 'Segoe UI',system-ui,sans-serif;padding:28px 0}
+.wrap{max-width:1040px;margin:0 auto;padding:0 24px}.card{background:#0a1628;border:1px solid #1d4ed8;border-radius:14px;box-shadow:0 0 40px #1d4ed833;overflow:hidden}
+header{padding:20px 28px;background:linear-gradient(135deg,#0b2a6b,#0a1628);border-bottom:1px solid #1d4ed8;font-family:Consolas,monospace;font-size:13px;line-height:1.7}
+header b{color:#60a5fa}header .u{font-size:16px;color:#fff;letter-spacing:.5px}.slides{padding:28px;min-height:520px}.slide{display:none}.slide.active{display:block}
+h1{font-size:40px;margin:10px 0;color:#fff}h1 span{color:#38bdf8}h2{margin:6px 0;color:#fff;font-size:26px}.tag{display:inline-block;font:12px Consolas,monospace;color:#38bdf8;border:1px solid #1d4ed8;padding:2px 10px;border-radius:20px}
+code{font-family:Consolas,monospace;background:#0f2a5c;color:#7dd3fc;padding:1px 6px;border-radius:4px}pre{font:12.5px/1.5 Consolas,monospace;margin:6px 0 14px;padding:14px;border-radius:8px;overflow:auto;max-height:260px;white-space:pre}
+.code{background:#07101f;border:1px solid #1e3a8a;color:#bfdbfe}.out{background:#000;border:1px solid #0e7490;color:#5eead4}.lbl{font:11px Consolas,monospace;color:#60a5fa}.lbl.ok{color:#2dd4bf}
+.note{margin-top:18px;padding:12px 16px;border-left:3px solid #f59e0b;background:#1c1405;color:#fcd34d;border-radius:6px;font-size:13px}
+.kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin:18px 0}.kpis div{background:#07101f;border:1px solid #1e3a8a;border-radius:10px;padding:14px;font-size:12px}.kpis b{display:block;font-size:22px;color:#38bdf8}
+nav{display:flex;justify-content:space-between;align-items:center;padding:12px 28px;border-top:1px solid #1d4ed8;background:#07101f}button{background:#1d4ed8;color:#fff;border:0;padding:8px 18px;border-radius:6px;cursor:pointer;font:600 13px Consolas,monospace}button:hover{background:#2563eb}#c{font:13px Consolas,monospace;color:#60a5fa}
+@media(max-width:700px){.kpis{grid-template-columns:1fr 1fr}h1{font-size:28px}}</style></head><body><div class="wrap"><div class="card"><header><div class="u">UNIVERSIDAD NACIONAL DEL ALTIPLANO</div><div>FACULTAD DE INGENIERIA ESTADISTICA E INFORMATICA</div><div><b>ESTUDIANTE:</b> Daniel Jhosimar Quispe Ramos</div><div><b>CURSO:</b> Aprendizaje Supervisado</div><div><b>TEMA:</b> LIMPIEZA DE DATOS</div></header><div class="slides"><section class="slide active cover"><div class="tag">PRESENTACIÓN · PYTHON</div><h1>LIMPIEZA DE DATOS<br><span>en Python</span></h1><p>Script <code>limpieza_datos_python.py</code> ejecutado completamente sobre una base de prueba. Use ← → para navegar.</p><div class="note">⚠ Base de prueba generada con la misma estructura (308 filas × 14 variables, con códigos sucios, categorías inválidas, outliers y 5 duplicados). Al disponer de <b>datosparalimpiartarea.xlsx</b>, los resultados se reproducen ejecutando el mismo script.</div></section><section class="slide"><div class="tag">PASO 0/9</div><h2>Carga de datos</h2><p>Se importa la base <b>datosparalimpiartarea.xlsx</b> y se inspecciona su estructura original (14 variables, nombres con espacios y mayúsculas, códigos sucios).</p><div class="lbl">&gt;_ Python · código</div><pre class="code"># LIMPIEZA DE DATOS EN PYTHON
+import pandas as pd
+import numpy as np
+
+df = pd.read_excel(&quot;datosparalimpiartarea.xlsx&quot;)</pre><div class="lbl ok">▶ SALIDA (ejecutado)</div><pre class="out">(308, 14)
+  Edad      Sex Tipo dolor Pres art reposo Colesterol Azucar ayunas Res electrocardio Frec cardica Angina Depresion Pendiente Num vasos Thal Enferm cardiaca
+0    *     male          1             151        320             0                 0          174      0         *         1         ?    6             yes
+1   75   female          2             152        242             0                 0          159      1       0.4         2         1    3             yes
+2   46     male          4             133         Na             0                 0          151      0       3.3         1         0    7             yes
+3   52  unknown          4             118        198             0                 0          123      0       2.3         2         2    6              no
+4   62     male          4             119        211             0                 0          146      0       0.8         1         1    5              no</pre></section><section class="slide"><div class="tag">PASO 1/9</div><h2>Normalizar nombres de columnas</h2><p>Se eliminan espacios laterales, se pasa a minúsculas y se reemplazan espacios por guiones bajos.</p><div class="lbl">&gt;_ Python · código</div><pre class="code"># 1. Normalizar nombres
+df.columns = [c.strip().lower().replace(&quot; &quot;, &quot;_&quot;) for c in df.columns]</pre><div class="lbl ok">▶ SALIDA (ejecutado)</div><pre class="out">[&#x27;edad&#x27;, &#x27;sex&#x27;, &#x27;tipo_dolor&#x27;, &#x27;pres_art_reposo&#x27;, &#x27;colesterol&#x27;, &#x27;azucar_ayunas&#x27;, &#x27;res_electrocardio&#x27;, &#x27;frec_cardica&#x27;, &#x27;angina&#x27;, &#x27;depresion&#x27;, &#x27;pendiente&#x27;, &#x27;num_vasos&#x27;, &#x27;thal&#x27;, &#x27;enferm_cardiaca&#x27;]</pre></section><section class="slide"><div class="tag">PASO 2/9</div><h2>Códigos de faltantes → NA</h2><p>Los códigos <code>Na</code>, <code>?</code> y <code>*</code> se convierten en valores faltantes reales (NA).</p><div class="lbl">&gt;_ Python · código</div><pre class="code"># 2. Convertir códigos de datos faltantes a NaN
+df = df.replace([&quot;Na&quot;, &quot;NA&quot;, &quot;?&quot;, &quot;*&quot;, &quot;&quot;], np.nan)</pre><div class="lbl ok">▶ SALIDA (ejecutado)</div><pre class="out">edad                  8
+sex                  11
+tipo_dolor            7
+pres_art_reposo       4
+colesterol            7
+azucar_ayunas         8
+res_electrocardio     5
+frec_cardica          4
+angina                9
+depresion             5
+pendiente             6
+num_vasos             9
+thal                  4
+enferm_cardiaca       4</pre></section><section class="slide"><div class="tag">PASO 3/9</div><h2>Conversión a variables numéricas</h2><p>Las 12 variables numéricas se convierten a tipo numérico; lo no convertible queda como NA.</p><div class="lbl">&gt;_ Python · código</div><pre class="code"># 3. Convertir variables numéricas
+numeric_cols = [
+    &quot;edad&quot;,&quot;tipo_dolor&quot;,&quot;pres_art_reposo&quot;,&quot;colesterol&quot;,&quot;azucar_ayunas&quot;,
+    &quot;res_electrocardio&quot;,&quot;frec_cardica&quot;,&quot;angina&quot;,&quot;depresion&quot;,&quot;pendiente&quot;,
+    &quot;num_vasos&quot;,&quot;thal&quot;
+]
+for col in numeric_cols:
+    df[col] = pd.to_numeric(df[col], errors=&quot;coerce&quot;)</pre><div class="lbl ok">▶ SALIDA (ejecutado)</div><pre class="out">edad                 float64
+sex                      str
+tipo_dolor           float64
+pres_art_reposo      float64
+colesterol           float64
+azucar_ayunas        float64
+res_electrocardio    float64
+frec_cardica         float64
+angina               float64
+depresion            float64
+pendiente            float64
+num_vasos            float64
+thal                 float64
+enferm_cardiaca          str</pre></section><section class="slide"><div class="tag">PASO 4/9</div><h2>Limpieza de variables categóricas</h2><p><code>sex</code> y <code>enferm_cardiaca</code> se limpian de espacios y mayúsculas para unificar categorías.</p><div class="lbl">&gt;_ Python · código</div><pre class="code"># 4. Limpiar variables categóricas
+for col in [&quot;sex&quot;, &quot;enferm_cardiaca&quot;]:
+    df[col] = df[col].astype(&quot;string&quot;).str.strip().str.lower()</pre><div class="lbl ok">▶ SALIDA (ejecutado)</div><pre class="out">sex
+male       212
+female      83
+&lt;NA&gt;        11
+unknown      1
+m            1
+enferm_cardiaca
+no       160
+yes      143
+&lt;NA&gt;       4
+maybe      1</pre></section><section class="slide"><div class="tag">PASO 5/9</div><h2>Validación de categorías y códigos</h2><p>Todo valor fuera de las categorías válidas (p. ej. <code>unknown</code>, <code>maybe</code>, tipo_dolor = 9, thal = 5) pasa a NA.</p><div class="lbl">&gt;_ Python · código</div><pre class="code"># 5. Validar categorías/códigos
+valid = {
+    &quot;sex&quot;: {&quot;male&quot;,&quot;female&quot;},
+    &quot;enferm_cardiaca&quot;: {&quot;yes&quot;,&quot;no&quot;},
+    &quot;tipo_dolor&quot;: {1,2,3,4},
+    &quot;azucar_ayunas&quot;: {0,1},
+    &quot;res_electrocardio&quot;: {0,1,2},
+    &quot;angina&quot;: {0,1},
+    &quot;pendiente&quot;: {1,2,3},
+    &quot;num_vasos&quot;: {0,1,2,3},
+    &quot;thal&quot;: {3,6,7},
+}
+for col, values in valid.items():
+    df.loc[df[col].notna() &amp; ~df[col].isin(values), col] = np.nan</pre><div class="lbl ok">▶ SALIDA (ejecutado)</div><pre class="out">sex                13
+enferm_cardiaca     5
+tipo_dolor         10
+thal                7</pre></section><section class="slide"><div class="tag">PASO 6/9</div><h2>Imputación de faltantes</h2><p>Mediana para variables numéricas y moda para categóricas; la base queda sin faltantes.</p><div class="lbl">&gt;_ Python · código</div><pre class="code"># 6. Imputar faltantes
+# Mediana para variables numéricas
+for col in numeric_cols:
+    df[col] = df[col].fillna(df[col].median())
+
+# Moda para variables categóricas
+for col in [&quot;sex&quot;, &quot;enferm_cardiaca&quot;]:
+    df[col] = df[col].fillna(df[col].mode(dropna=True).iloc[0])</pre><div class="lbl ok">▶ SALIDA (ejecutado)</div><pre class="out">Faltantes restantes: 0
+   colesterol     sex
+0       320.0    male
+1       242.0  female
+2       247.0    male
+3       198.0    male
+4       211.0    male</pre></section><section class="slide"><div class="tag">PASO 7/9</div><h2>Detección de outliers (IQR)</h2><p>Se marcan outliers con la regla 1.5·IQR en 5 variables; <b>no se eliminan</b>, solo se señalan con columnas <code>outlier_*</code>.</p><div class="lbl">&gt;_ Python · código</div><pre class="code"># 7. Detectar outliers mediante IQR
+outlier_cols = [&quot;edad&quot;,&quot;pres_art_reposo&quot;,&quot;colesterol&quot;,&quot;frec_cardica&quot;,&quot;depresion&quot;]
+for col in outlier_cols:
+    q1 = df[col].quantile(0.25)
+    q3 = df[col].quantile(0.75)
+    iqr = q3 - q1
+    limite_inf = q1 - 1.5 * iqr
+    limite_sup = q3 + 1.5 * iqr
+    df[f&quot;outlier_{col}&quot;] = (df[col] &lt; limite_inf) | (df[col] &gt; limite_sup)</pre><div class="lbl ok">▶ SALIDA (ejecutado)</div><pre class="out">outlier_edad                0
+outlier_pres_art_reposo     0
+outlier_colesterol          6
+outlier_frec_cardica        7
+outlier_depresion          18</pre></section><section class="slide"><div class="tag">PASO 8/9</div><h2>Comprobaciones finales</h2><p>Verificación de dimensiones, duplicados y faltantes tras la limpieza.</p><div class="lbl">&gt;_ Python · código</div><pre class="code"># 8. Comprobaciones finales
+print(&quot;Filas y columnas:&quot;, df.shape)
+print(&quot;Duplicados:&quot;, df.duplicated().sum())
+print(&quot;Valores faltantes:&quot;)
+print(df.isna().sum())</pre><div class="lbl ok">▶ SALIDA (ejecutado)</div><pre class="out">Filas y columnas: (308, 19)
+Duplicados: 5
+Valores faltantes:
+edad                       0
+sex                        0
+tipo_dolor                 0
+pres_art_reposo            0
+colesterol                 0
+azucar_ayunas              0
+res_electrocardio          0
+frec_cardica               0
+angina                     0
+depresion                  0
+pendiente                  0
+num_vasos                  0
+thal                       0
+enferm_cardiaca            0
+outlier_edad               0
+outlier_pres_art_reposo    0
+outlier_colesterol         0
+outlier_frec_cardica       0
+outlier_depresion          0
+dtype: int64</pre></section><section class="slide"><div class="tag">PASO 9/9</div><h2>Guardado de la base limpia</h2><p>La base limpia se exporta a Excel.</p><div class="lbl">&gt;_ Python · código</div><pre class="code"># 9. Guardar la base limpia
+df.to_excel(&quot;datos_limpios_python.xlsx&quot;, index=False)</pre><div class="lbl ok">▶ SALIDA (ejecutado)</div><pre class="out">True (308, 19)</pre></section><section class="slide"><div class="tag">RESUMEN</div><h2>Resultados de la limpieza</h2><div class="kpis"><div><b>308 → 308</b>filas (no se eliminan)</div><div><b>14 → 19</b>columnas (+5 outlier_*)</div><div><b>0</b>faltantes finales</div><div><b>5</b>duplicados detectados</div></div><p>Los outliers marcados: colesterol (6), frecuencia cardíaca (7) y depresión (18). Los duplicados se reportan, pero no se eliminan. Salida: <code>datos_limpios_python.xlsx</code>.</p></section></div><nav><button onclick="go(-1)">← ANTERIOR</button><span id="c"></span><button onclick="go(1)">SIGUIENTE →</button></nav></div></div><script>const s=[...document.querySelectorAll('.slide')];let i=0;function go(d){s[i].classList.remove('active');i=Math.max(0,Math.min(s.length-1,i+d));s[i].classList.add('active');document.getElementById('c').textContent=(i+1)+' / '+s.length;scrollTo(0,0)}document.addEventListener('keydown',e=>{if(e.key=='ArrowRight')go(1);if(e.key=='ArrowLeft')go(-1)});go(0)</script></body></html>
